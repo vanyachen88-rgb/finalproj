@@ -3,6 +3,10 @@ from sqlalchemy import types as sql_types
 from etl.db import engine
 
 
+# ============================================================
+# TABLE ORDER
+# ============================================================
+
 TABLE_ORDER = [
     "Dim_Date",
     "Customers",
@@ -14,6 +18,13 @@ TABLE_ORDER = [
     "Maintenance"
 ]
 
+
+# ============================================================
+# STAGING SQL SERVER DATA TYPES
+# ============================================================
+# 明確指定 DataFrame → SQL Server 的欄位型態
+# 避免 pandas 自動推斷造成 VARCHAR / BIGINT / DATETIME
+# ============================================================
 
 STAGING_DTYPES = {
 
@@ -48,20 +59,20 @@ STAGING_DTYPES = {
         "budget": sql_types.Numeric(18, 2),
     },
 
+    "Machines": {
+        "machine_id": sql_types.Integer(),
+        "model": sql_types.NVARCHAR(50),
+        "purchase_date": sql_types.Date(),
+        "purchase_cost": sql_types.Numeric(18, 2),
+        "status": sql_types.NVARCHAR(20),
+    },
+
     "Leads": {
         "lead_id": sql_types.Integer(),
         "customer_id": sql_types.Integer(),
         "campaign_id": sql_types.Integer(),
         "lead_date": sql_types.Date(),
         "channel": sql_types.NVARCHAR(50),
-        "status": sql_types.NVARCHAR(20),
-    },
-
-    "Machines": {
-        "machine_id": sql_types.Integer(),
-        "model": sql_types.NVARCHAR(50),
-        "purchase_date": sql_types.Date(),
-        "purchase_cost": sql_types.Numeric(18, 2),
         "status": sql_types.NVARCHAR(20),
     },
 
@@ -91,57 +102,56 @@ STAGING_DTYPES = {
         "cost": sql_types.Numeric(18, 2),
     },
 }
+
+
 # ============================================================
-# LOAD
+# LOAD → STAGING
 # ============================================================
-def load_all(data):
+
+def load_staging(data):
 
     print()
     print("=" * 60)
     print("LOAD → STAGING")
     print("=" * 60)
-    # --------------------------------------------------------
-    # STAGING
-    # --------------------------------------------------------
-for table_name in TABLE_ORDER:
 
-    df = data[table_name]
+    for table_name in TABLE_ORDER:
 
-    staging_table = f"stg_{table_name}"
+        df = data[table_name]
 
-    df.to_sql(
-        staging_table,
-        con=engine,
-        schema="dbo",
-        if_exists="replace",
-        index=False,
-        dtype=STAGING_DTYPES[table_name]
-    )
-    print("\n")
-    print(
-        f"Loaded {staging_table}: "
-        f"{len(df):,} rows"
-    )
-    print("LOAD → STAGING")
-    print("=" * 60)
-# --------------------------------------------------------
-   # PRODUCTION
-# --------------------------------------------------------
-    print("STAGING → PRODUCTION")
-    print("=" * 60)
+        staging_table = f"stg_{table_name}"
+
+        df.to_sql(
+            staging_table,
+            con=engine,
+            schema="dbo",
+            if_exists="replace",
+            index=False,
+            dtype=STAGING_DTYPES[table_name]
+        )
+
+        print(
+            f"Loaded {staging_table}: "
+            f"{len(df):,} rows"
+        )
+
+
+# ============================================================
+# STAGING → PRODUCTION
+# ============================================================
 
 def load_production():
 
-    print("\n")
+    print()
     print("=" * 60)
     print("STAGING → PRODUCTION")
     print("=" * 60)
 
     with engine.begin() as conn:
 
-        # =================================================
+        # ====================================================
         # Dim_Date
-        # =================================================
+        # ====================================================
 
         conn.execute(text("""
             MERGE dbo.Dim_Date AS target
@@ -187,9 +197,9 @@ def load_production():
                 );
         """))
 
-        # =================================================
+        # ====================================================
         # Customers
-        # =================================================
+        # ====================================================
 
         conn.execute(text("""
             MERGE dbo.Customers AS target
@@ -223,9 +233,9 @@ def load_production():
                 );
         """))
 
-        # =================================================
+        # ====================================================
         # Marketing_Campaigns
-        # =================================================
+        # ====================================================
 
         conn.execute(text("""
             MERGE dbo.Marketing_Campaigns AS target
@@ -259,9 +269,9 @@ def load_production():
                 );
         """))
 
-        # =================================================
+        # ====================================================
         # Machines
-        # =================================================
+        # ====================================================
 
         conn.execute(text("""
             MERGE dbo.Machines AS target
@@ -292,9 +302,9 @@ def load_production():
                 );
         """))
 
-        # =================================================
+        # ====================================================
         # Leads
-        # =================================================
+        # ====================================================
 
         conn.execute(text("""
             MERGE dbo.Leads AS target
@@ -328,9 +338,9 @@ def load_production():
                 );
         """))
 
-        # =================================================
+        # ====================================================
         # Rentals
-        # =================================================
+        # ====================================================
 
         conn.execute(text("""
             MERGE dbo.Rentals AS target
@@ -367,9 +377,9 @@ def load_production():
                 );
         """))
 
-        # =================================================
+        # ====================================================
         # Payments
-        # =================================================
+        # ====================================================
 
         conn.execute(text("""
             MERGE dbo.Payments AS target
@@ -400,9 +410,9 @@ def load_production():
                 );
         """))
 
-        # =================================================
+        # ====================================================
         # Maintenance
-        # =================================================
+        # ====================================================
 
         conn.execute(text("""
             MERGE dbo.Maintenance AS target
@@ -436,12 +446,16 @@ def load_production():
     print("Production Upsert completed.")
 
 
+# ============================================================
+# LOAD ALL
+# ============================================================
+
 def load_all(data):
 
     load_staging(data)
     load_production()
 
-    print("\n")
+    print()
     print("=" * 60)
     print("LOAD COMPLETED")
     print("=" * 60)
