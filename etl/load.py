@@ -1,4 +1,5 @@
 from sqlalchemy import text
+from sqlalchemy import types as sql_types
 from etl.db import engine
 
 
@@ -14,6 +15,105 @@ TABLE_ORDER = [
 ]
 
 
+STAGING_DTYPES = {
+
+    "Dim_Date": {
+        "date_id": sql_types.Integer(),
+        "full_date": sql_types.Date(),
+        "year": sql_types.SmallInteger(),
+        "quarter": sql_types.SmallInteger(),
+        "month": sql_types.SmallInteger(),
+        "month_name": sql_types.NVARCHAR(20),
+        "week": sql_types.SmallInteger(),
+        "day": sql_types.SmallInteger(),
+        "day_of_week": sql_types.SmallInteger(),
+        "day_name": sql_types.NVARCHAR(20),
+    },
+
+    "Customers": {
+        "customer_id": sql_types.Integer(),
+        "gender": sql_types.CHAR(1),
+        "age": sql_types.SmallInteger(),
+        "city": sql_types.NVARCHAR(20),
+        "register_date": sql_types.Date(),
+        "acquisition_channel": sql_types.NVARCHAR(50),
+    },
+
+    "Marketing_Campaigns": {
+        "campaign_id": sql_types.Integer(),
+        "campaign_name": sql_types.NVARCHAR(100),
+        "channel": sql_types.NVARCHAR(50),
+        "start_date": sql_types.Date(),
+        "end_date": sql_types.Date(),
+        "budget": sql_types.Numeric(18, 2),
+    },
+
+    "Leads": {
+        "lead_id": sql_types.Integer(),
+        "customer_id": sql_types.Integer(),
+        "campaign_id": sql_types.Integer(),
+        "lead_date": sql_types.Date(),
+        "channel": sql_types.NVARCHAR(50),
+        "status": sql_types.NVARCHAR(20),
+    },
+
+    "Machines": {
+        "machine_id": sql_types.Integer(),
+        "model": sql_types.NVARCHAR(50),
+        "purchase_date": sql_types.Date(),
+        "purchase_cost": sql_types.Numeric(18, 2),
+        "status": sql_types.NVARCHAR(20),
+    },
+
+    "Rentals": {
+        "rental_id": sql_types.Integer(),
+        "customer_id": sql_types.Integer(),
+        "machine_id": sql_types.Integer(),
+        "start_date": sql_types.Date(),
+        "end_date": sql_types.Date(),
+        "monthly_fee": sql_types.Numeric(18, 2),
+        "status": sql_types.NVARCHAR(20),
+    },
+
+    "Payments": {
+        "payment_id": sql_types.Integer(),
+        "rental_id": sql_types.Integer(),
+        "payment_date": sql_types.Date(),
+        "amount": sql_types.Numeric(18, 2),
+        "payment_status": sql_types.NVARCHAR(20),
+    },
+
+    "Maintenance": {
+        "maintenance_id": sql_types.Integer(),
+        "machine_id": sql_types.Integer(),
+        "maintenance_date": sql_types.Date(),
+        "maintenance_type": sql_types.NVARCHAR(20),
+        "cost": sql_types.Numeric(18, 2),
+    },
+}
+
+
+for table_name in TABLE_ORDER:
+
+    df = data[table_name]
+
+    staging_table = f"stg_{table_name}"
+
+    df.to_sql(
+        staging_table,
+        con=engine,
+        schema="dbo",
+        if_exists="replace",
+        index=False,
+        dtype=STAGING_DTYPES[table_name]
+    )
+
+    print(
+        f"Loaded {staging_table}: "
+        f"{len(df):,} rows"
+    )
+
+
 def load_staging(data):
 
     print("\n")
@@ -21,24 +121,7 @@ def load_staging(data):
     print("LOAD → STAGING")
     print("=" * 60)
 
-    for table_name in TABLE_ORDER:
 
-        df = data[table_name]
-
-        staging_table = f"stg_{table_name}"
-
-        df.to_sql(
-            staging_table,
-            con=engine,
-            schema="dbo",
-            if_exists="replace",
-            index=False
-        )
-
-        print(
-            f"Loaded {staging_table}: "
-            f"{len(df):,} rows"
-        )
 
 
 def load_production():
