@@ -91,8 +91,18 @@ STAGING_DTYPES = {
         "cost": sql_types.Numeric(18, 2),
     },
 }
+# ============================================================
+# LOAD
+# ============================================================
+def load_all(data):
 
-
+    print()
+    print("=" * 60)
+    print("LOAD → STAGING")
+    print("=" * 60)
+    # --------------------------------------------------------
+    # STAGING
+    # --------------------------------------------------------
 for table_name in TABLE_ORDER:
 
     df = data[table_name]
@@ -107,22 +117,18 @@ for table_name in TABLE_ORDER:
         index=False,
         dtype=STAGING_DTYPES[table_name]
     )
-
+    print("\n")
     print(
         f"Loaded {staging_table}: "
         f"{len(df):,} rows"
     )
-
-
-def load_staging(data):
-
-    print("\n")
-    print("=" * 60)
     print("LOAD → STAGING")
     print("=" * 60)
-
-
-
+# --------------------------------------------------------
+   # PRODUCTION
+# --------------------------------------------------------
+    print("STAGING → PRODUCTION")
+    print("=" * 60)
 
 def load_production():
 
