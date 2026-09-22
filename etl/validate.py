@@ -329,12 +329,6 @@ def validate_all(data):
         "machine_id"
     )
 
-    # Customers 刪掉payments
-    check_foreign_key(
-        data["Customers"],
-        "Customers",
-        "customer_id"
-    )
 
     # Payments → Rentals
     check_foreign_key(
