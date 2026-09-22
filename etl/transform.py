@@ -28,8 +28,11 @@ def basic_clean(df):
 def transform_dim_date(df):
     df = basic_clean(df)
 
-    if "date" in df.columns:
-        df["date"] = pd.to_datetime(df["date"], errors="coerce")
+    if "full_date" in df.columns:
+        df["full_date"] = pd.to_datetime(
+            df["full_date"],
+            errors="coerce"
+        )
 
     return df
 
@@ -37,11 +40,11 @@ def transform_dim_date(df):
 def transform_customers(df):
     df = basic_clean(df)
 
-    if "join_date" in df.columns:
-        df["join_date"] = pd.to_datetime(
-            df["join_date"],
+    if "register_date" in df.columns:
+        df["register_date"] = pd.to_datetime(
+            df["register_date"],
             errors="coerce"
-        )
+    )
 
     return df
 
@@ -91,29 +94,23 @@ def transform_machines(df):
 def transform_rentals(df):
     df = basic_clean(df)
 
-    if "rental_start_date" in df.columns:
-        df["rental_start_date"] = pd.to_datetime(
-            df["rental_start_date"],
+    if "start_date" in df.columns:
+        df["start_date"] = pd.to_datetime(
+            df["start_date"],
             errors="coerce"
         )
 
-    if "rental_end_date" in df.columns:
-        df["rental_end_date"] = pd.to_datetime(
-            df["rental_end_date"],
+    if "end_date" in df.columns:
+        df["end_date"] = pd.to_datetime(
+            df["end_date"],
             errors="coerce"
         )
 
-    numeric_columns = [
-        "rental_amount",
-        "deposit"
-    ]
-
-    for col in numeric_columns:
-        if col in df.columns:
-            df[col] = pd.to_numeric(
-                df[col],
-                errors="coerce"
-            )
+    if "monthly_fee" in df.columns:
+        df["monthly_fee"] = pd.to_numeric(
+            df["monthly_fee"],
+            errors="coerce"
+        )
 
     return df
 
@@ -145,9 +142,9 @@ def transform_maintenance(df):
             errors="coerce"
         )
 
-    if "maintenance_cost" in df.columns:
-        df["maintenance_cost"] = pd.to_numeric(
-            df["maintenance_cost"],
+    if "cost" in df.columns:
+        df["cost"] = pd.to_numeric(
+            df["cost"],
             errors="coerce"
         )
 

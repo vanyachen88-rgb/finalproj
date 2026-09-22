@@ -13,7 +13,7 @@ from etl.transform import (
 
 from etl.validate import validate_all
 
-from etl.load import load_all
+from etl.load_CSV import load_all
 
 
 def main():

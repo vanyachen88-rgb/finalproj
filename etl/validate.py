@@ -242,7 +242,7 @@ def validate_all(data):
     check_primary_key(
         data["Dim_Date"],
         "Dim_Date",
-        "date"
+        "date_id"
     )
 
     check_primary_key(
@@ -329,11 +329,8 @@ def validate_all(data):
         "machine_id"
     )
 
-    # Payments → Customers
+    # Customers 刪掉payments
     check_foreign_key(
-        data["Payments"],
-        "Payments",
-        "customer_id",
         data["Customers"],
         "Customers",
         "customer_id"
@@ -373,8 +370,8 @@ def validate_all(data):
     check_date_order(
         data["Rentals"],
         "Rentals",
-        "rental_start_date",
-        "rental_end_date"
+        "start_date",
+        "end_date"
     )
 
     # -----------------------------------------------------
@@ -384,13 +381,13 @@ def validate_all(data):
     check_non_negative(
         data["Rentals"],
         "Rentals",
-        "rental_amount"
+        "monthly_fee"
     )
 
     check_non_negative(
         data["Rentals"],
         "Rentals",
-        "deposit"
+        "monthly_fee"
     )
 
     check_non_negative(
@@ -402,7 +399,7 @@ def validate_all(data):
     check_non_negative(
         data["Maintenance"],
         "Maintenance",
-        "maintenance_cost"
+        "cost"
     )
 
     # -----------------------------------------------------
@@ -412,7 +409,7 @@ def validate_all(data):
     check_numeric_column(
         data["Rentals"],
         "Rentals",
-        "rental_amount"
+        "monthly_fee"
     )
 
     check_numeric_column(
@@ -430,7 +427,7 @@ def validate_all(data):
     check_numeric_column(
         data["Maintenance"],
         "Maintenance",
-        "maintenance_cost"
+        "cost"
     )
 
     print("\n")
