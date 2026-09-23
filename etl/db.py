@@ -1,6 +1,7 @@
 import os
 import urllib.parse
 
+import pyodbc
 from dotenv import load_dotenv
 from sqlalchemy import create_engine
 
@@ -24,8 +25,31 @@ if not all([
     )
 
 
+# ============================================================
+# ODBC DRIVER
+# ============================================================
+
+available_drivers = pyodbc.drivers()
+
+if "ODBC Driver 18 for SQL Server" in available_drivers:
+    DRIVER = "ODBC Driver 18 for SQL Server"
+
+elif "ODBC Driver 17 for SQL Server" in available_drivers:
+    DRIVER = "ODBC Driver 17 for SQL Server"
+
+else:
+    raise RuntimeError(
+        "No supported SQL Server ODBC driver found. "
+        f"Available drivers: {available_drivers}"
+    )
+
+
+# ============================================================
+# CONNECTION
+# ============================================================
+
 connection_string = (
-    "DRIVER={ODBC Driver 18 for SQL Server};"
+    f"DRIVER={{{DRIVER}}};"
     f"SERVER={SERVER};"
     f"DATABASE={DATABASE};"
     f"UID={USERNAME};"
@@ -39,5 +63,6 @@ params = urllib.parse.quote_plus(
 )
 
 engine = create_engine(
-    f"mssql+pyodbc:///?odbc_connect={params}"
+    f"mssql+pyodbc:///?odbc_connect={params}",
+    pool_pre_ping=True
 )
