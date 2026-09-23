@@ -263,7 +263,35 @@ maintenance_f = maintenance_f[
         machines_f["machine_id"]
     )
 ].copy()
+# ============================================================
+# Project Information
+st.sidebar.markdown("---")
 
+st.sidebar.subheader("Project")
+
+st.sidebar.markdown(
+    """
+    **Tech Stack**
+
+    - Python
+    - Pandas
+    - SQLAlchemy
+    - SQL Server
+    - Google Cloud SQL
+    - Streamlit
+    - Plotly
+    - Git / GitHub
+    """
+)
+
+st.sidebar.caption(
+    "Portfolio Data Engineering Project"
+)
+
+st.sidebar.link_button(
+    "View Source Code",
+    "https://github.com/vanyachen88-rgb/finalproj"
+)
 
 # ============================================================
 # BUSINESS METRICS
@@ -371,7 +399,7 @@ with col3:
 with col4:
     st.metric(
         "Total Revenue",
-        f"${total_revenue:,.0f}"
+        f"NT$ {total_revenue:,.0f}"
     )
 
 
@@ -380,15 +408,15 @@ col5, col6, col7 = st.columns(3)
 with col5:
     st.metric(
         "Average Monthly Fee",
-        f"${avg_monthly_fee:,.2f}"
+        f"NT${avg_monthly_fee:,.0f}"  
         if pd.notna(avg_monthly_fee)
-        else "$0.00"
+        else "NT$0"
     )
 
 with col6:
     st.metric(
         "Maintenance Cost",
-        f"${maintenance_cost:,.0f}"
+        f"NT${maintenance_cost:,.0f}"
     )
 
 with col7:
@@ -397,9 +425,26 @@ with col7:
         f"{conversion_rate:.1%}"
     )
 
-
 st.markdown("---")
+#各項數據的計算方式說明
+with st.expander("KPI Definitions"):
 
+    st.markdown(
+        """
+        **Total Revenue**  
+        Sum of payments with `payment_status = Paid`.
+
+        **Average Monthly Fee**  
+        Average monthly rental fee within the selected period.
+
+        **Maintenance Cost**  
+        Total machine maintenance cost within the selected period.
+
+        **Lead Conversion Rate**  
+        Percentage of leads whose customer subsequently started
+        at least one rental on or after the lead date.
+        """
+    )
 
 # ============================================================
 # TABS
