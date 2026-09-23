@@ -1,8 +1,9 @@
+import pyodbc
 import streamlit as st
 import pandas as pd
 import plotly.express as px
-
 from analytics.db import read_sql
+
 
 
 # ============================================================
@@ -16,7 +17,7 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-
+st.write("Available ODBC drivers:", pyodbc.drivers())
 # ============================================================
 # CUSTOM CSS
 # ============================================================
