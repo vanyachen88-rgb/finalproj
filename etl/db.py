@@ -1,4 +1,5 @@
 import os
+import sys
 import urllib.parse
 
 import pyodbc
@@ -25,10 +26,6 @@ if not all([
     )
 
 
-# ============================================================
-# ODBC DRIVER
-# ============================================================
-
 available_drivers = pyodbc.drivers()
 
 if "ODBC Driver 18 for SQL Server" in available_drivers:
@@ -42,7 +39,8 @@ else:
         "No supported SQL Server ODBC driver found. "
         f"Available drivers: {available_drivers}"
     )
-#讓 Cloud 告訴我們 etl/db.py 選了什麼
+
+
 print(
     f"[DB DEBUG] Available ODBC drivers: {available_drivers}"
 )
@@ -50,9 +48,9 @@ print(
 print(
     f"[DB DEBUG] Selected ODBC driver: {DRIVER}"
 )
-# ============================================================
-# CONNECTION
-# ============================================================
+
+sys.stdout.flush()
+
 
 connection_string = (
     f"DRIVER={{{DRIVER}}};"
