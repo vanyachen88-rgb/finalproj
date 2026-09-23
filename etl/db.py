@@ -42,8 +42,14 @@ else:
         "No supported SQL Server ODBC driver found. "
         f"Available drivers: {available_drivers}"
     )
+#讓 Cloud 告訴我們 etl/db.py 選了什麼
+print(
+    f"[DB DEBUG] Available ODBC drivers: {available_drivers}"
+)
 
-
+print(
+    f"[DB DEBUG] Selected ODBC driver: {DRIVER}"
+)
 # ============================================================
 # CONNECTION
 # ============================================================
