@@ -4,7 +4,7 @@ import plotly.express as px
 from analytics.db import read_sql
 
 
-
+st.title("Rental Business Analytics Dashboard - DEPLOY TEST")
 # ============================================================
 # PAGE CONFIG
 # ============================================================
